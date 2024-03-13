@@ -13,5 +13,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 RUN chmod +x .deploy/wait-for-db.sh
-
-CMD [".deploy/wait-for-db.sh", "python", "manage.py", "runserver", "0.0.0.0:8000"]
+RUN chmod +x .deploy/init.sh
