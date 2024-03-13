@@ -16,3 +16,11 @@ class ClientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Client
         fields = ['category', 'first_name', 'last_name', 'email', 'gender', 'birth_date', 'age']
+
+
+class ExportSerializer(serializers.Serializer):
+    category = serializers.CharField(required=False)
+    gender = serializers.CharField(required=False)
+    min_age = serializers.IntegerField(required=False)
+    max_age = serializers.IntegerField(required=False)
+    age = serializers.IntegerField(required=False)

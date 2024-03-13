@@ -1,5 +1,5 @@
 import csv
-from datetime import date
+from datetime import date, datetime
 
 from django.core.management.base import BaseCommand
 
@@ -27,7 +27,9 @@ class Command(BaseCommand):
             filters['birth_date__year__lte'] = date.today().year - options['max_age'] - 1
 
         queryset = Client.objects.filter(**filters)
-        with open('exported_data.csv', 'w', newline='') as csvfile:
+        timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+
+        with open(f'exported_data_{timestamp}.csv', 'w', newline='') as csvfile:
             fieldnames = ['category', 'firstname', 'lastname', 'email', 'gender', 'birth_date']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()
