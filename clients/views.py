@@ -7,6 +7,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import generics
+from rest_framework.exceptions import ValidationError
 
 from .filters import ClientFilter
 from .models import Client
@@ -46,14 +47,16 @@ class ExportAPIView(generics.GenericAPIView):
             filters['category'] = serializer.validated_data['category']
         if 'gender' in serializer.validated_data:
             filters['gender'] = serializer.validated_data['gender']
-        if 'min_age' in serializer.validated_data or 'max_age' in serializer.validated_data:
+        if 'min_age' in serializer.validated_data and 'max_age' in serializer.validated_data:
+            raise ValidationError("Only one of 'min_age' or 'max_age' can be specified")
+        if 'min_age' in serializer.validated_data:
             today = date.today()
-            if 'min_age' in serializer.validated_data:
-                min_age = serializer.validated_data['min_age']
-                filters['birth_date__year__gte'] = today.year - min_age - 1
-            if 'max_age' in serializer.validated_data:
-                max_age = serializer.validated_data['max_age']
-                filters['birth_date__year__lte'] = today.year - max_age
+            min_age = serializer.validated_data['min_age']
+            filters['birth_date__year__lte'] = today.year - min_age - 1
+        if 'max_age' in serializer.validated_data:
+            today = date.today()
+            max_age = serializer.validated_data['max_age']
+            filters['birth_date__year__gte'] = today.year - max_age
         if 'age' in serializer.validated_data:
             age = serializer.validated_data['age']
             filters['birth_date__year'] = date.today().year - age
